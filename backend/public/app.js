@@ -16,9 +16,13 @@ function createUser(email, password) {
     });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+function createUserFA(email, password) {
+    return firebase.auth().createUserWithEmailAndPassword(email, password);
+}
+
+window.addEventListener("DOMContentLoaded", () => {    
     const el_register = document.getElementById("register_submit");
-    //const el_login = document.getElementById("login_submit");
+    const el_fa_login = document.getElementById("fa_submit");
     const el_uid = document.getElementById("uid");
     const el_email = document.getElementById("email");
     const el_password = document.getElementById("password");
@@ -30,6 +34,16 @@ window.addEventListener("DOMContentLoaded", () => {
         const password = el_password.value;
         console.log("email = %s, password = %s", email, password);
         createUser(email, password).then(user => {
+            el_uid.innerText = user.uid;
+        });
+        return false;
+    };
+
+    el_fa_login.onclick = () => {
+        const email = el_email.value;
+        const password = el_password.value;
+        createUserFA(email, password).then( user => {
+            console.log("uid: ", user.uid);
             el_uid.innerText = user.uid;
         });
         return false;

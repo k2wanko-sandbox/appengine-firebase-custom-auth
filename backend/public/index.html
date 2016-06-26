@@ -1,0 +1,45 @@
+{{define "index"}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Firebase Custom Auth</title>
+    <style>
+      html, body, main {
+      height: 100%;
+      }
+      .box {
+      background: #efefef;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 600px;
+      height: 480px;
+      }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+      apiKey: "AIzaSyCAWqI3zf-SZCKXRistHyhyv0u62qTpw5o",
+      authDomain: "k2wanko-sandbox-firebase-auth.firebaseapp.com",
+      databaseURL: "https://k2wanko-sandbox-firebase-auth.firebaseio.com",
+      storageBucket: "k2wanko-sandbox-firebase-auth.appspot.com",
+      };
+      firebase.initializeApp(config);
+    </script>
+    <script src="app.js"></script>
+  </head>
+  <body>
+    <div class="box">
+      <form id="form" action="/login" method="POST">
+        <p id="uid"></p>
+        <p><span>email: </span><input id="email" name="email" type="text" value=""/></p>
+        <p><span>password: </span><input id="password" name="password" type="password" value=""/></p>
+        <button id="register_submit" type="submit">create</button>
+        <!-- <button id="login_submit" type="submit">login</button> -->
+      </form>
+    </div>
+  </body>
+</html>
+{{end}}

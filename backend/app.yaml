@@ -1,0 +1,19 @@
+application: helloworld
+version: 1
+runtime: go
+api_version: go1
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+- url: /(.+(\.js|\.css))$
+  static_files: public/\1
+  upload: public/(.+(\.js|\.css))$
+  expiration: 10m
+- url: /(.+\.html)$
+  static_files: public/\1
+  upload: public/.+\.html$
+  application_readable: true
+- url: /.*
+  script: _go_app

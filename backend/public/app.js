@@ -1,7 +1,6 @@
 function createUser(email, password) {
     const data = new FormData();
     data.append("email", email);
-    data.append("password", password);
     return fetch("/register", {
         method: "POST",
         body: data
@@ -11,7 +10,8 @@ function createUser(email, password) {
             .signInWithCustomToken(token)
             .then(user => {
                 console.log("uid: ", user.uid);
-                return user.updateEmail(email).then(() => user);
+                //return user.updateEmail(email).then(() => user);
+                return user;
             });
     });
 }
@@ -20,7 +20,10 @@ function createUserFA(email, password) {
     return firebase.auth().createUserWithEmailAndPassword(email, password);
 }
 
-window.addEventListener("DOMContentLoaded", () => {    
+window.addEventListener("DOMContentLoaded", () => {
+    const database = firebase.database();
+    const auth = firebase.auth();
+    
     const el_register = document.getElementById("register_submit");
     const el_fa_login = document.getElementById("fa_submit");
     const el_uid = document.getElementById("uid");
@@ -32,21 +35,26 @@ window.addEventListener("DOMContentLoaded", () => {
     el_register.onclick = () => {
         const email = el_email.value;
         const password = el_password.value;
-        console.log("email = %s, password = %s", email, password);
+        console.log("email = %s", email);
         createUser(email, password).then(user => {
-            el_uid.innerText = user.uid;
+            const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+            auth.currentUser.link(credential).then( user => {
+                el_uid.innerText = user.uid;
+            } ,err => {
+                console.error(err);
+            });
         });
         return false;
     };
 
-    el_fa_login.onclick = () => {
-        const email = el_email.value;
-        const password = el_password.value;
-        createUserFA(email, password).then( user => {
-            console.log("uid: ", user.uid);
-            el_uid.innerText = user.uid;
-        });
-        return false;
-    };
+    // el_fa_login.onclick = () => {
+    //     const email = el_email.value;
+    //     const password = el_password.value;
+    //     createUserFA(email, password).then( user => {
+    //         console.log("uid: ", user.uid);
+    //         el_uid.innerText = user.uid;
+    //     });
+    //     return false;
+    // };
     
 }, false);

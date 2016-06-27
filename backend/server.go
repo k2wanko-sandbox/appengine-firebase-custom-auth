@@ -63,7 +63,7 @@ func init() {
 
 	// handle
 	e.GET("/", handle)
-	e.POST("/register", handleCreate)
+	e.POST("/login", handleLogin)
 
 	// set handle
 	s := standard.New("")
@@ -75,21 +75,16 @@ func handle(c echo.Context) error {
 	return c.Render(200, "index", "")
 }
 
-func handleCreate(c echo.Context) error {
-	email, pass := c.FormValue("email"), c.FormValue("password")
+func handleLogin(c echo.Context) error {
+	email := c.FormValue("email")
 	logf(c, "handleCreate: email=%s", email)
 
 	if u, _ := userFromEmail(c, email); u != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "dup email")
 	}
 
-	if pass == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "no password")
-	}
-
 	u := &User{
-		Email:    email,
-		Password: pass,
+		Email: email,
 	}
 	g := goon.FromContext(c)
 	_, err := g.Put(u)
@@ -103,12 +98,19 @@ func handleCreate(c echo.Context) error {
 		return err
 	}
 
+	reft, err := u.RefreshToken()
+	if err != nil {
+		return err
+	}
+
 	r := struct {
-		User  *User
-		Token string
+		User         *User
+		Token        string
+		RefreshToken string
 	}{
-		User:  u,
-		Token: s,
+		User:         u,
+		Token:        s,
+		RefreshToken: reft,
 	}
 
 	return c.JSON(http.StatusCreated, r)

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo"
 )
 
 func createToken(u *User) *jwt.Token {
@@ -21,4 +22,20 @@ func createToken(u *User) *jwt.Token {
 		"premium_account": 1,
 	}
 	return tok
+}
+
+func parseTokenString(token string) (*jwt.Token, error) {
+	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return privateKey.Public(), nil
+	})
+}
+
+var TokenLookup = "header: " + echo.HeaderAuthorization
+
+func JWTAuth() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			return next(c)
+		}
+	}
 }
